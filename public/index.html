@@ -1,1 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtrar Planilha SESC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3665B3;
+            --primary-dark: #2a5096;
+            --secondary: #FF7F32;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --success: #28a745;
+            --border: #dee2e6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf1 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+        
+        .card-title i {
+            font-size: 1.6rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            background: white;
+            transition: var(--transition);
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .file-input-label:hover {
+            border-color: var(--primary);
+            background-color: rgba(54, 101, 179, 0.05);
+        }
+        
+        .file-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .file-name {
+            margin-top: 15px;
+            font-style: italic;
+            color: var(--gray);
+            word-break: break-word;
+            text-align: center;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        select {
+            background: white;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233665B3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 18px;
+            padding-right: 50px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(54, 101, 179, 0.2);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e6722b;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .filters-section {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .filters-section.visible {
+            opacity: 1;
+            height: auto;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        
+        .preview-section {
+            margin-top: 30px;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .preview-title {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .preview-table th {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .preview-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .preview-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .preview-table tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .badge-light {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 15px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-table"></i>
+                <div>
+                    <h1>Filtrar Planilha SESC</h1>
+                    <p class="subtitle">Filtre e visualize dados de planilhas de forma rápida e intuitiva</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Passos Simples</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Seguro</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value"><i class="fas fa-bolt"></i></div>
+                <div class="stat-label">Processamento Rápido</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-file-upload"></i> Upload de Planilha</h3>
+                <form id="formUpload" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="arquivo">Selecionar arquivo:</label>
+                        <div class="file-input-container">
+                            <input type="file" id="arquivo" name="arquivo" class="file-input" accept=".xlsx,.xls" required>
+                            <label for="arquivo" class="file-input-label">
+                                <div class="file-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                <p>Clique para selecionar um arquivo ou arraste até aqui</p>
+                                <p><small>Formatos suportados: .xlsx, .xls</small></p>
+                            </label>
+                        </div>
+                        <div id="fileName" class="file-name"></div>
+                    </div>
+                    
+                    <button type="submit" id="uploadBtn" class="btn">
+                        <i class="fas fa-upload"></i>
+                        <span>Carregar Planilha</span>
+                    </button>
+                    
+                    <div id="uploadStatus" class="status-message hidden"></div>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-filter"></i> Filtrar Dados</h3>
+                <div id="filtersSection" class="filters-section">
+                    <div class="form-group">
+                        <label for="unidadeSelect">Selecionar unidade:</label>
+                        <select id="unidadeSelect"></select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button id="previewBtn" class="btn btn-secondary">
+                            <i class="fas fa-eye"></i>
+                            <span>Pré-visualizar</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button id="baixarBtn" class="btn btn-success">
+                            <i class="fas fa-download"></i>
+                            <span>Baixar Planilha Filtrada</span>
+                        </button>
+                    </div>
+                    
+                    <div id="downloadStatus" class="status-message hidden"></div>
+                </div>
+                <div id="filtersPlaceholder">
+                    <p style="text-align: center; color: var(--gray); padding: 20px;">
+                        <i class="fas fa-arrow-left" style="font-size: 1.5rem; margin-bottom: 10px; display: block;"></i>
+                        Faça upload de uma planilha para habilitar os filtros
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="preview-section">
+            <div class="preview-header">
+                <h3 class="preview-title"><i class="fas fa-table"></i> Pré-visualização</h3>
+                <span id="previewCount" class="badge badge-primary">0 linhas</span>
+            </div>
+            <div class="table-responsive">
+                <table id="preview" class="preview-table"></table>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema de Filtragem de Planilhas SESC / Desenvolvido por AXDEV &copy; 2025 - Todos os direitos reservados</p>
+        </footer>
+    </div>
 
+    <script>
+        // Elementos da interface
+        const formUpload = document.getElementById('formUpload');
+        const arquivoInput = document.getElementById('arquivo');
+        const fileName = document.getElementById('fileName');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const filtersSection = document.getElementById('filtersSection');
+        const filtersPlaceholder = document.getElementById('filtersPlaceholder');
+        const unidadeSelect = document.getElementById('unidadeSelect');
+        const previewBtn = document.getElementById('previewBtn');
+        const baixarBtn = document.getElementById('baixarBtn');
+        const downloadStatus = document.getElementById('downloadStatus');
+        const previewTable = document.getElementById('preview');
+        const previewCount = document.getElementById('previewCount');
+        
+        // Estado da aplicação
+        let arquivo = null;
+        let filePath = null;
+        
+        // Atualizar nome do arquivo selecionado
+        arquivoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileName.textContent = e.target.files[0].name;
+            } else {
+                fileName.textContent = '';
+            }
+        });
+        
+        // Permitir arrastar e soltar arquivos
+        const fileInputLabel = document.querySelector('.file-input-label');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileInputLabel.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileInputLabel.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileInputLabel.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            fileInputLabel.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            fileInputLabel.classList.remove('highlight');
+        }
+        
+        fileInputLabel.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            arquivoInput.files = files;
+            
+            if (files.length > 0) {
+                fileName.textContent = files[0].name;
+            }
+        }
+        
+        // Envio do formulário de upload
+        formUpload.addEventListener('submit', async e => {
+            e.preventDefault();
+            
+            // Validar se um arquivo foi selecionado
+            if (!arquivoInput.files.length) {
+                showStatus(uploadStatus, 'Por favor, selecione um arquivo.', 'error');
+                return;
+            }
+            
+            arquivo = e.target.arquivo.files[0];
+            const formData = new FormData();
+            formData.append('arquivo', arquivo);
+            
+            // Mostrar estado de carregamento
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<div class="spinner"></div><span>Processando...</span>';
+            showStatus(uploadStatus, 'Enviando e processando planilha, aguarde...', 'loading');
+            
+            try {
+                const resp = await fetch('/upload', { 
+                    method: 'POST', 
+                    body: formData 
+                });
+                
+                if (!resp.ok) {
+                    throw new Error(`Erro no servidor: ${resp.status}`);
+                }
+                
+                const data = await resp.json();
+                filePath = data.filePath;
+                
+                // Preencher o select com as unidades
+                unidadeSelect.innerHTML = `<option value="">Todas as unidades</option>` + 
+                    data.unidades.map(u => `<option value="${u}">${u}</option>`).join('');
+                
+                // Mostrar a seção de filtros e esconder o placeholder
+                filtersSection.classList.add('visible');
+                filtersPlaceholder.style.display = 'none';
+                
+                showStatus(uploadStatus, 'Planilha carregada com sucesso! Agora selecione uma unidade para filtrar.', 'success');
+            } catch (error) {
+                console.error('Erro:', error);
+                showStatus(uploadStatus, `Falha ao carregar planilha: ${error.message}`, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload"></i><span>Carregar Planilha</span>';
+            }
+        });
+        
+        // Pré-visualização dos dados
+        previewBtn.addEventListener('click', async () => {
+            const unidade = unidadeSelect.value;
+            
+            if (!unidade) {
+                showStatus(downloadStatus, 'Por favor, selecione uma unidade primeiro.', 'error');
+                return;
+            }
+            
+            // Mostrar estado de carregamento
+            previewBtn.disabled = true;
+            previewBtn.innerHTML = '<div class="spinner"></div><span>Carregando...</span>';
+            
+            try {
+                const resp = await fetch('/preview', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filePath, unidade })
+                });
+                
+                if (!resp.ok) {
+                    throw new Error(`Erro no servidor: ${resp.status}`);
+                }
+                
+                const data = await resp.json();
+                
+                // Atualizar a tabela de pré-visualização
+                previewTable.innerHTML = '';
+                
+                if (data.cabecalho && data.cabecalho.length) {
+                    // Criar cabeçalho
+                    const headerRow = document.createElement('tr');
+                    data.cabecalho.forEach(h => {
+                        const th = document.createElement('th');
+                        th.textContent = h;
+                        headerRow.appendChild(th);
+                    });
+                    previewTable.appendChild(headerRow);
+                    
+                    // Criar linhas de dados
+                    if (data.preview && data.preview.length) {
+                        data.preview.forEach(row => {
+                            const tr = document.createElement('tr');
+                            data.cabecalho.forEach(h => {
+                                const td = document.createElement('td');
+                                td.textContent = row[h] || '';
+                                tr.appendChild(td);
+                            });
+                            previewTable.appendChild(tr);
+                        });
+                        
+                        previewCount.textContent = `${data.preview.length} linhas`;
+                    } else {
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.colSpan = data.cabecalho.length;
+                        td.textContent = 'Nenhum dado encontrado.';
+                        td.style.textAlign = 'center';
+                        tr.appendChild(td);
+                        previewTable.appendChild(tr);
+                        
+                        previewCount.textContent = '0 linhas';
+                    }
+                } else {
+                    previewTable.innerHTML = '<tr><td style="text-align: center; padding: 20px;">Nenhum dado disponível para visualização.</td></tr>';
+                    previewCount.textContent = '0 linhas';
+                }
+                
+                // Rolagem suave até a pré-visualização
+                previewTable.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showStatus(downloadStatus, `Falha ao carregar pré-visualização: ${error.message}`, 'error');
+            } finally {
+                previewBtn.disabled = false;
+                previewBtn.innerHTML = '<i class="fas fa-eye"></i><span>Pré-visualizar</span>';
+            }
+        });
+        
+        // Download da planilha filtrada
+        baixarBtn.addEventListener('click', async () => {
+            const unidade = unidadeSelect.value;
+            
+            if (!unidade) {
+                showStatus(downloadStatus, 'Por favor, selecione uma unidade primeiro.', 'error');
+                return;
+            }
+            
+            // Mostrar estado de carregamento
+            baixarBtn.disabled = true;
+            baixarBtn.innerHTML = '<div class="spinner"></div><span>Gerando planilha...</span>';
+            showStatus(downloadStatus, 'Filtrando e gerando planilha, aguarde...', 'loading');
+            
+            try {
+                const resp = await fetch('/filtrar', {
+                    method:'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filePath, unidade })
+                });
+                
+                if (!resp.ok) {
+                    throw new Error(`Erro no servidor: ${resp.status}`);
+                }
+                
+                const blob = await resp.blob();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `planilha_filtrada_${unidade || 'todas'}.xlsx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showStatus(downloadStatus, 'Planilha baixada com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro:', error);
+                showStatus(downloadStatus, `Falha ao baixar planilha: ${error.message}`, 'error');
+            } finally {
+                baixarBtn.disabled = false;
+                baixarBtn.innerHTML = '<i class="fas fa-download"></i><span>Baixar Planilha Filtrada</span>';
+            }
+        });
+        
+        // Função auxiliar para mostrar mensagens de status
+        function showStatus(element, message, type) {
+            element.textContent = message;
+            element.classList.remove('hidden', 'success', 'error', 'loading');
+            element.classList.add(type, 'visible');
+            
+            // Auto-esconder mensagens de sucesso após 5 segundos
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.classList.add('hidden');
+                    element.classList.remove('visible');
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
